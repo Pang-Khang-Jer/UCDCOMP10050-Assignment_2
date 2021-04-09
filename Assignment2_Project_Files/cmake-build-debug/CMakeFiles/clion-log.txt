@@ -1,0 +1,11 @@
+"C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "C:\Users\pangk\Documents\School\2021_Spring\COMP10050-Software Engineering Project 1\Assignment2\UCDCOMP10050-Assignment_2\Assignment2_Project_Files"
+-- The C compiler identification is GNU 9.2.0
+-- Check for working C compiler: C:/MinGW/bin/gcc.exe
+-- Check for working C compiler: C:/MinGW/bin/gcc.exe - works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/cmake-build-debug
