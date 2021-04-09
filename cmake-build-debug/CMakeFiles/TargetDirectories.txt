@@ -1,0 +1,3 @@
+C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/cmake-build-debug/CMakeFiles/UCDCOMP10050_Assignment_2.dir
+C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/main.c
+stdio.h
+-
+
