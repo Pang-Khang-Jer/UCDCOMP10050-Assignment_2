@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/library.c" "C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/cmake-build-debug/CMakeFiles/Assignment2_Project_Files.dir/library.c.obj"
   "C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/main.c" "C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/cmake-build-debug/CMakeFiles/Assignment2_Project_Files.dir/main.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

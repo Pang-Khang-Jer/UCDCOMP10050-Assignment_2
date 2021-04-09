@@ -3,4 +3,4 @@ project(Assignment2_Project_Files C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Assignment2_Project_Files main.c)
+add_executable(Assignment2_Project_Files main.c library.h library.c)

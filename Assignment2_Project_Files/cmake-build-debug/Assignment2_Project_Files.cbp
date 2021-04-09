@@ -74,6 +74,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/library.c">
+			<Option target="Assignment2_Project_Files"/>
+		</Unit>
+		<Unit filename="C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/library.h">
+			<Option target="Assignment2_Project_Files"/>
+		</Unit>
 		<Unit filename="C:/Users/pangk/Documents/School/2021_Spring/COMP10050-Software Engineering Project 1/Assignment2/UCDCOMP10050-Assignment_2/Assignment2_Project_Files/main.c">
 			<Option target="Assignment2_Project_Files"/>
 		</Unit>

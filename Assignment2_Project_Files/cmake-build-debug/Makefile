@@ -142,6 +142,33 @@ Assignment2_Project_Files/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Assignment2_Project_Files.dir\build.make CMakeFiles/Assignment2_Project_Files.dir/build
 .PHONY : Assignment2_Project_Files/fast
 
+library.obj: library.c.obj
+
+.PHONY : library.obj
+
+# target to build an object file
+library.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Assignment2_Project_Files.dir\build.make CMakeFiles/Assignment2_Project_Files.dir/library.c.obj
+.PHONY : library.c.obj
+
+library.i: library.c.i
+
+.PHONY : library.i
+
+# target to preprocess a source file
+library.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Assignment2_Project_Files.dir\build.make CMakeFiles/Assignment2_Project_Files.dir/library.c.i
+.PHONY : library.c.i
+
+library.s: library.c.s
+
+.PHONY : library.s
+
+# target to generate assembly for a file
+library.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Assignment2_Project_Files.dir\build.make CMakeFiles/Assignment2_Project_Files.dir/library.c.s
+.PHONY : library.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -178,6 +205,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Assignment2_Project_Files
+	@echo ... library.obj
+	@echo ... library.i
+	@echo ... library.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
