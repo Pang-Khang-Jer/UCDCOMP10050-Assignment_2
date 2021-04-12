@@ -3,12 +3,14 @@
 
 int main()
 {
-    PlayBoard board;
+    // initialize the play board. all changes in the game is made to this play board
+    PlayBoard board = {"\0", "\0", 0, 0, {0}};
 
+    initializeGrid(&board);
     printIntro();
     registerPlayers(&board);
 
-    printf("%s %s", board.player1, board.player2);
+    printBoard(board);
 
     return 0;
 }
