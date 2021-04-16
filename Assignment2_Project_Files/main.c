@@ -23,6 +23,7 @@ int main()
 
         printf("Empty: %d\n", isNodeEmpty(board.grid, row, col));
         printf("Selectable: %d\n", isNodeSelectable(row, col));
+        printf("Can capture right: %d\n", canCaptureDirection(&board.grid, activePlayer, row, col, 0, 1));
     }
 
     return 0;
