@@ -28,9 +28,9 @@ void registerPlayers(PlayBoard *board)
 }
 
 // returns the char representing the disc located in rowIndex, colIndex
-char getGridDisc(PlayBoard board, int rowIndex, int colIndex)
+char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
 {
-    GridState disc = board.grid[rowIndex][colIndex];
+    NodeState disc = grid[rowIndex][colIndex];
     char output;
 
     switch (disc)
@@ -79,7 +79,7 @@ void printBoard(PlayBoard board)
                 // location of current printed grid in grid index
                 int localGridX = x;
                 int localGridY = y / 2;
-                char gridChar = getGridDisc(board, localGridX, localGridY);
+                char gridChar = getNodeState(board.grid, localGridX, localGridY);
 
                 printf(" %c |", gridChar);
             }
@@ -96,4 +96,45 @@ void printBoard(PlayBoard board)
     }
 
     printf("\n\n");
+}
+
+// return 1 if the move is valid, 0 otherwise
+int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
+{
+    if (!isNodeEmpty(grid, rowIndex, colIndex))
+    {
+        puts("Not a valid move. The selected node is occupied.");
+        return 0;
+    }
+}
+
+// return 1 if the NodeState of the given index is empty, 0 otherwise
+int isNodeEmpty(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
+{
+    return grid[rowIndex][colIndex] == EMPTY;
+}
+
+// return 1 if the input index is inside the grid, 0 otherwise
+int isNodeSelectable(int rowIndex, int colIndex)
+{
+    int maxIndex = GRID_SIZE - 1;
+
+    if (rowIndex > maxIndex || rowIndex < 0 || colIndex > maxIndex || colIndex < 0)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+void readInput(PlayBoard board, int *row, int *col)
+{
+    int inputRow;
+    char inputCol;
+
+    printf("? ");
+    scanf("%d %c", &inputRow, &inputCol);
+
+    *row = inputRow - 1;
+    *col = inputCol - 'a';
 }
