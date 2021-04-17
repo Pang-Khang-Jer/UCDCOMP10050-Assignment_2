@@ -29,11 +29,12 @@ void printIntro();
 void initializeGrid(PlayBoard *board);
 void registerPlayers(PlayBoard *board);
 void printBoard(PlayBoard board);
+void readInput(PlayBoard board, int *row, int *col);
 char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
-int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
+int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int rowIndex, int colIndex);
 int isNodeEmpty(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
 int isNodeSelectable(int rowIndex, int colIndex);
-int canCaptureDirection(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep);
-void readInput(PlayBoard board, int *row, int *col);
+int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep);
+void capture(PlayBoard *board, ActivePlayer activePlayer, int centerRowIndex, int centerColIndex);
 
 #endif //ASSIGNMENT2_PROJECT_FILES_LIBRARY_H

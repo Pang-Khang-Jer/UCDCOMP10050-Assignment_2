@@ -21,9 +21,18 @@ int main()
 
         readInput(board, &row, &col);
 
+        /*
+        printf("Input: %d%d\n", row, col);
         printf("Empty: %d\n", isNodeEmpty(board.grid, row, col));
         printf("Selectable: %d\n", isNodeSelectable(row, col));
-        printf("Can capture right: %d\n", canCaptureDirection(&board.grid, activePlayer, row, col, 0, 1));
+        printf("Move valid: %d\n", isMoveValid(board.grid, activePlayer, row, col));
+        */
+
+        if (isMoveValid(board.grid, activePlayer, row, col))
+        {
+            capture(&board, activePlayer, row, col);
+            printBoard(board);
+        }
     }
 
     return 0;

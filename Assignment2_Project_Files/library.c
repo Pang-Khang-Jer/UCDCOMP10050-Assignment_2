@@ -79,7 +79,7 @@ void printBoard(PlayBoard board)
                 // location of current printed grid in grid index
                 int localGridX = x;
                 int localGridY = y / 2;
-                char gridChar = getNodeState(board.grid, localGridX, localGridY);
+                char gridChar = getNodeState(board.grid, localGridY, localGridX);
 
                 printf(" %c |", gridChar);
             }
@@ -98,8 +98,21 @@ void printBoard(PlayBoard board)
     printf("\n\n");
 }
 
+// read input in format "%d%c" and convert it to index
+void readInput(PlayBoard board, int *row, int *col)
+{
+    int inputRow;
+    char inputCol;
+
+    printf("? ");
+    scanf("%d%c", &inputRow, &inputCol);
+
+    *row = inputRow - 1;
+    *col = inputCol - 'a';
+}
+
 // return 1 if the move is valid, 0 otherwise
-int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
+int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int rowIndex, int colIndex)
 {
     if (!isNodeEmpty(grid, rowIndex, colIndex))
     {
@@ -113,27 +126,27 @@ int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex
     }
     else
     {
-        /*
         // this might be a valid move. check the surrounding nodes
-
-        for (int i = -1; i <= 1; ++i)
+        for (int y = -1; y <= 1; ++y)
         {
-            for (int j = -1; j <= 1; ++j)
+            for (int x = -1; x <= 1; ++x)
             {
-                // skip the node that is just placed
-                if (i == 0 && j == 0)
+                // skip checking the node that is just placed
+                if (y == 0 && x == 0)
                 {
                     continue;
                 }
 
-                //int checkRow = rowIndex + i;
-                //int checkCol = colIndex + j;
-
-
+                // check if a capture is possible in all directions
+                if (canCaptureDirection(grid, activePlayer, rowIndex, colIndex, y, x) > 0)
+                {
+                    return 1;
+                }
             }
         }
-         */
     }
+
+    return 0;
 }
 
 // return 1 if the NodeState of the given index is empty, 0 otherwise
@@ -156,7 +169,7 @@ int isNodeSelectable(int rowIndex, int colIndex)
 }
 
 // return the number of captures that can be made in the direction specified by captureRowStep and captureColStep
-int canCaptureDirection(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep)
+int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep)
 {
     int stepsMoved = 0;         //number of steps moved
     NodeState activeColor;      //stores the color of the active player
@@ -166,16 +179,12 @@ int canCaptureDirection(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activ
     NodeState curNode;          //stores the color of the current node being checked
 
     activeColor = activePlayer == PLAYER1 ? BLACK : WHITE;
-    // player 1 captures white discs, player 2 captures black discs
     opponentColor = activePlayer == PLAYER1 ? WHITE : BLACK;
 
-    printf("Player's active color is: %d\n", activeColor);
-    printf("Opponent's color is: %d\n", opponentColor);
-
+    // move one step and get the node
     curRowIndex = centerRowIndex + captureRowStep;
     curColIndex = centerColIndex + captureColStep;
     curNode = grid[curRowIndex][curColIndex];
-    printf("Comparing %d, %d\n", curRowIndex, curColIndex);
 
     // move in the given step until it reaches the border or the current node is not the opponent's color
     while (isNodeSelectable(curRowIndex, curColIndex) && curNode == opponentColor)
@@ -184,7 +193,6 @@ int canCaptureDirection(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activ
         curRowIndex += captureRowStep;
         curColIndex += captureColStep;
         curNode = grid[curRowIndex][curColIndex];
-        printf("Comparing %d, %d\n", curRowIndex, curColIndex);
     }
 
     // check the current node to see if it can be captured
@@ -194,19 +202,40 @@ int canCaptureDirection(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activ
     }
 
     // the last disc checked is not the active color. cannot capture
-    puts("cannot capture");
     return 0;
 }
 
-// read input in format "int char" and convert it to index
-void readInput(PlayBoard board, int *row, int *col)
+void capture(PlayBoard *board, ActivePlayer activePlayer, int centerRowIndex, int centerColIndex)
 {
-    int inputRow;
-    char inputCol;
+    // the number of discs to be captured
+    int numCapture;
+    NodeState activeColor = activePlayer == PLAYER1 ? BLACK : WHITE;
+    int curRowIndex = centerRowIndex;
+    int curColIndex = centerColIndex;
 
-    printf("? ");
-    scanf("%d %c", &inputRow, &inputCol);
+    // place the center disc
+    board->grid[curRowIndex][curColIndex] = activeColor;
+    printf("Placed disc at: %d%d\n", curRowIndex, curColIndex);
 
-    *row = inputRow - 1;
-    *col = inputCol - 'a';
+    // capture discs in all direction
+    for (int y = -1; y <= 1; ++y)
+    {
+        for (int x = -1; x <= 1; ++x)
+        {
+            // skip checking the node that is just placed
+            if (y == 0 && x == 0)
+            {
+                continue;
+            }
+
+            numCapture = canCaptureDirection(board->grid, activePlayer, centerRowIndex, centerColIndex, y, x);
+
+            for (int captured = 0; captured < numCapture; ++captured)
+            {
+                curRowIndex += y;
+                curColIndex += x;
+                board->grid[curRowIndex][curColIndex] = activeColor;
+            }
+        }
+    }
 }
