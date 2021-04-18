@@ -1,5 +1,6 @@
 #include "library.h"
 #include <stdio.h>
+#include <string.h>
 
 void printIntro()
 {
@@ -14,17 +15,17 @@ void initializeGrid(PlayBoard *board)
     board->grid[center - 1][center] = BLACK;
     board->grid[center][center] = WHITE;
 
-    board->player1Score = 2;
-    board->player2Score = 2;
+    board->player1.playerScore = 2;
+    board->player2.playerScore = 2;
 }
 
 // assign the players of a game
 void registerPlayers(PlayBoard *board)
 {
     printf("Enter Enter name of Player 1 (Black): ");
-    gets(board->player1Name);
+    gets(board->player1.playerName);
     printf("Enter name of Player 2 (White): ");
-    gets(board->player2Name);
+    gets(board->player2.playerName);
 }
 
 // returns the char representing the disc located in rowIndex, colIndex
@@ -52,7 +53,7 @@ char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colInd
 void printBoard(PlayBoard board)
 {
     // print scoreboard
-    printf(" Score: %s (Black) %d:%d %s (White)\n", board.player1Name, board.player1Score, board.player2Score, board.player2Name);
+    printf(" Score: %s (Black) %d:%d %s (White)\n", board.player1.playerName, board.player1.playerScore, board.player2.playerScore, board.player2.playerName);
 
     // loop until GRID_SIZE * 2 + 1 because each row needs to be looped twice and one extra loop is needed to close the grid
     for (int y = 0; y < GRID_SIZE * 2 + 1; ++y)
@@ -99,12 +100,16 @@ void printBoard(PlayBoard board)
 }
 
 // read input in format "%d%c" and convert it to index
-void readInput(PlayBoard board, int *row, int *col)
+void readInput(Player activePlayer, int *row, int *col)
 {
     int inputRow;
     char inputCol;
+    char discColorStr[MAX_ARRAY_SIZE];
 
-    printf("? ");
+    strcpy(discColorStr, activePlayer.discColor == BLACK ? "Black" : "White");
+
+    printf("It's %s (%s)'s  turn.\n", activePlayer.playerName, discColorStr);
+    printf("Enter move (a number followed by a character, e.g. 1b, 5g): ");
     scanf("%d%c", &inputRow, &inputCol);
 
     *row = inputRow - 1;
@@ -112,16 +117,16 @@ void readInput(PlayBoard board, int *row, int *col)
 }
 
 // return 1 if the move is valid, 0 otherwise
-int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int rowIndex, int colIndex)
+int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex)
 {
-    if (!isNodeEmpty(grid, rowIndex, colIndex))
+    if (!isNodeSelectable(rowIndex, colIndex))
     {
-        puts("Not a valid move. The selected node is occupied.");
+        puts("Invalid move: Selected node is outside the grid.");
         return 0;
     }
-    else if (!isNodeSelectable(rowIndex, colIndex))
+    else if (!isNodeEmpty(grid, rowIndex, colIndex))
     {
-        puts("Not a valid move. The selected node is outside the grid.");
+        puts("Invalid move: Selected node is occupied.");
         return 0;
     }
     else
@@ -144,6 +149,8 @@ int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer,
                 }
             }
         }
+
+        puts("Invalid move: No discs to capture.");
     }
 
     return 0;
@@ -169,7 +176,7 @@ int isNodeSelectable(int rowIndex, int colIndex)
 }
 
 // return the number of captures that can be made in the direction specified by captureRowStep and captureColStep
-int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep)
+int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep)
 {
     int stepsMoved = 0;         //number of steps moved
     NodeState activeColor;      //stores the color of the active player
@@ -178,8 +185,8 @@ int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer
     int curColIndex;            //stores the column index of the node being checked
     NodeState curNode;          //stores the color of the current node being checked
 
-    activeColor = activePlayer == PLAYER1 ? BLACK : WHITE;
-    opponentColor = activePlayer == PLAYER1 ? WHITE : BLACK;
+    activeColor = activePlayer.discColor;
+    opponentColor = activeColor == BLACK ? WHITE : BLACK;
 
     // move one step and get the node
     curRowIndex = centerRowIndex + captureRowStep;
@@ -205,23 +212,25 @@ int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], ActivePlayer
     return 0;
 }
 
-void capture(PlayBoard *board, ActivePlayer activePlayer, int centerRowIndex, int centerColIndex)
+// place the active player's disc in the input position and do all possible captures
+void capture(PlayBoard *board, Player activePlayer, int centerRowIndex, int centerColIndex)
 {
     // the number of discs to be captured
     int numCapture;
-    NodeState activeColor = activePlayer == PLAYER1 ? BLACK : WHITE;
-    int curRowIndex = centerRowIndex;
-    int curColIndex = centerColIndex;
+    NodeState activeColor = activePlayer.discColor;
 
     // place the center disc
-    board->grid[curRowIndex][curColIndex] = activeColor;
-    printf("Placed disc at: %d%d\n", curRowIndex, curColIndex);
+    board->grid[centerRowIndex][centerColIndex] = activeColor;
 
     // capture discs in all direction
     for (int y = -1; y <= 1; ++y)
     {
         for (int x = -1; x <= 1; ++x)
         {
+            // assign the center position (resets every iteration)
+            int curRowIndex = centerRowIndex;
+            int curColIndex = centerColIndex;
+
             // skip checking the node that is just placed
             if (y == 0 && x == 0)
             {
@@ -239,3 +248,26 @@ void capture(PlayBoard *board, ActivePlayer activePlayer, int centerRowIndex, in
         }
     }
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types-discards-qualifiers"
+// Make activePlayerPtr point to the next player
+void nextTurn(const PlayBoard *board, PlayerPtr *curActivePlayerPtr)
+{
+    if ((*curActivePlayerPtr)->discColor == BLACK)
+    {
+        // current active player is player 1, change it to player 2
+        *curActivePlayerPtr = &board->player2;
+    }
+    else if ((*curActivePlayerPtr)->discColor == WHITE)
+    {
+        // current active player is player 2, change it to player 1
+        *curActivePlayerPtr = &board->player1;
+    }
+    else
+    {
+        // precaution
+        puts("Error: Player with invalid disc color entered. Failed to proceed to next turn");
+    }
+}
+#pragma clang diagnostic pop
