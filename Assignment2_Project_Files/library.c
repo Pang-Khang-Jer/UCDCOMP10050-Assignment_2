@@ -105,28 +105,48 @@ void readInput(Player activePlayer, int *row, int *col)
     int inputRow;
     char inputCol;
     char discColorStr[MAX_ARRAY_SIZE];
+    int read;
 
     strcpy(discColorStr, activePlayer.discColor == BLACK ? "Black" : "White");
 
     printf("It's %s (%s)'s  turn.\n", activePlayer.playerName, discColorStr);
     printf("Enter move (a number followed by a character, e.g. 1b, 5g): ");
-    scanf("%d%c", &inputRow, &inputCol);
+
+    //read player's input with error checking
+    read = scanf("%d%c", &inputRow, &inputCol);
+
+    while (read != 2)
+    {
+        puts("Error reading input.");
+        printf("Enter move (a number followed by a character, e.g. 1b, 5g): ");
+
+        fflush(stdin);
+        read = scanf("%d%c", &inputRow, &inputCol);
+    }
 
     *row = inputRow - 1;
     *col = inputCol - 'a';
 }
 
 // return 1 if the move is valid, 0 otherwise
-int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex)
+int isMoveValid(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex, int printWarnings)
 {
     if (!isNodeSelectable(rowIndex, colIndex))
     {
-        puts("Invalid move: Selected node is outside the grid.");
+        if (printWarnings)
+        {
+            puts("Invalid move: Selected node is outside the grid.");
+        }
+
         return 0;
     }
     else if (!isNodeEmpty(grid, rowIndex, colIndex))
     {
-        puts("Invalid move: Selected node is occupied.");
+        if (printWarnings)
+        {
+            puts("Invalid move: Selected node is occupied.");
+        }
+
         return 0;
     }
     else
@@ -150,14 +170,17 @@ int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int r
             }
         }
 
-        puts("Invalid move: No discs to capture.");
+        if (printWarnings)
+        {
+            puts("Invalid move: No discs to capture.");
+        }
     }
 
     return 0;
 }
 
 // return 1 if the NodeState of the given index is empty, 0 otherwise
-int isNodeEmpty(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
+int isNodeEmpty(const NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex)
 {
     return grid[rowIndex][colIndex] == EMPTY;
 }
@@ -249,10 +272,8 @@ void capture(PlayBoard *board, Player activePlayer, int centerRowIndex, int cent
     }
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wincompatible-pointer-types-discards-qualifiers"
-// Make activePlayerPtr point to the next player
-void nextTurn(const PlayBoard *board, PlayerPtr *curActivePlayerPtr)
+// Make activePlayerPtr point to the next player. Pointer to board needs to be used so that activePlayerPtr points to the board with file scope
+void nextTurn(PlayBoard *board, PlayerPtr *curActivePlayerPtr)
 {
     if ((*curActivePlayerPtr)->discColor == BLACK)
     {
@@ -270,4 +291,76 @@ void nextTurn(const PlayBoard *board, PlayerPtr *curActivePlayerPtr)
         puts("Error: Player with invalid disc color entered. Failed to proceed to next turn");
     }
 }
-#pragma clang diagnostic pop
+
+// Returns 0 if there is no available moves in the board for the active player, 1 otherwise
+int isMoveAvailable(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer)
+{
+    for (int y = 0; y < GRID_SIZE; ++y)
+    {
+        for (int x = 0; x < GRID_SIZE; ++x)
+        {
+            if (isMoveValid(grid, activePlayer, y, x, 0))
+            {
+                // The active player can take this move, hence at least one move is available to the active player
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void updateScore(PlayBoard *board)
+{
+    int score1 = 0; //black score
+    int score2 = 0; //white score
+
+    for (int y = 0; y < GRID_SIZE; ++y)
+    {
+        for (int x = 0; x < GRID_SIZE; ++x)
+        {
+            NodeState curNode = board->grid[y][x];
+            if (curNode == board->player1.discColor)
+            {
+                score1++;
+            }
+            else if (curNode == board->player2.discColor)
+            {
+                score2++;
+            }
+        }
+    }
+
+    board->player1.playerScore = score1;
+    board->player2.playerScore = score2;
+}
+
+void endGame(PlayBoard board)
+{
+    Player winner;
+
+    puts("Game Ended");
+    puts("--------------");
+    puts("Final score:");
+    puts("--------------");
+    printf("%s (Black): %d\n", board.player1.playerName, board.player1.playerScore);
+    printf("%s (White): %d\n", board.player2.playerName, board.player2.playerScore);
+
+    if (board.player1.playerScore != board.player2.playerScore)
+    {
+        if (board.player1.playerScore > board.player2.playerScore)
+        {
+            winner = board.player1;
+        }
+        else if (board.player1.playerScore < board.player2.playerScore)
+        {
+            winner = board.player2;
+        }
+
+        printf("The winner is %s (%s)\n", winner.playerName, winner.discColor == BLACK ? "Black" : "White");
+    }
+    else
+    {
+        puts("The game ended as a draw.");
+    }
+}

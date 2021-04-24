@@ -7,6 +7,7 @@ int main()
     PlayBoard board = {{"\0", 0, BLACK}, {"\0", 0, WHITE}, {}};
     PlayerPtr activePlayerPtr;    // points to the player that is going to place a disc
     int isPlaying = 1;
+    int skippedLastTurn = 0;
 
     // the game starts with player 1
     activePlayerPtr = &board.player1;
@@ -17,26 +18,40 @@ int main()
 
     printBoard(board);
 
-    while (isPlaying)
+    while (isPlaying == 1)
     {
         int row, col;
 
-        readInput(*activePlayerPtr, &row, &col);
-
-        /*
-        printf("Input: %d%d\n", row, col);
-        printf("Empty: %d\n", isNodeEmpty(board.grid, row, col));
-        printf("Selectable: %d\n", isNodeSelectable(row, col));
-        printf("Move valid: %d\n", isMoveValid(board.grid, activePlayer, row, col));
-        */
-
-        if (isMoveValid(board.grid, *activePlayerPtr, row, col))
+        if (isMoveAvailable(board.grid, *activePlayerPtr))
         {
-            capture(&board, *activePlayerPtr, row, col);
-            printBoard(board);
-            nextTurn(&board, &activePlayerPtr);
+            readInput(*activePlayerPtr, &row, &col);
+
+            if (isMoveValid(board.grid, *activePlayerPtr, row, col, 1))
+            {
+                // the move is valid, do all possible captures and move to the next player
+                capture(&board, *activePlayerPtr, row, col);
+                updateScore(&board);
+                printBoard(board);
+                nextTurn(&board, &activePlayerPtr);
+            }
+        }
+        else
+        {
+            printf("No move available for %s (%s).\n", activePlayerPtr->playerName, activePlayerPtr->discColor == BLACK ? "Black" : "White");
+
+            if (skippedLastTurn == 0)
+            {
+                nextTurn(&board, &activePlayerPtr);
+                skippedLastTurn = 1;
+            }
+            else
+            {
+                isPlaying = 0;
+            }
         }
     }
+
+    endGame(board);
 
     return 0;
 }

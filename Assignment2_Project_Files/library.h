@@ -32,11 +32,14 @@ void registerPlayers(PlayBoard *board);
 void printBoard(PlayBoard board);
 void readInput(Player activePlayer, int *row, int *col);
 char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
-int isMoveValid(NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex);
-int isNodeEmpty(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
+int isMoveValid(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex, int printWarnings);
+int isNodeEmpty(const NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
 int isNodeSelectable(int rowIndex, int colIndex);
 int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep);
 void capture(PlayBoard *board, Player activePlayer, int centerRowIndex, int centerColIndex);
-void nextTurn(const PlayBoard *board, PlayerPtr *curActivePlayerPtr);
+void nextTurn(PlayBoard *board, PlayerPtr *curActivePlayerPtr);
+int isMoveAvailable(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer);
+void updateScore(PlayBoard *board);
+void endGame(PlayBoard board);
 
 #endif //ASSIGNMENT2_PROJECT_FILES_LIBRARY_H
