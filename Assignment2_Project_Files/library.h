@@ -29,7 +29,7 @@ typedef Player* PlayerPtr;
 void printIntro();
 void initializeGrid(PlayBoard *board);
 void registerPlayers(PlayBoard *board);
-void printBoard(PlayBoard board);
+void printBoard(PlayBoard board, Player activePlayer);
 void readInput(Player activePlayer, int *row, int *col);
 char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
 int isMoveValid(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex, int printWarnings);

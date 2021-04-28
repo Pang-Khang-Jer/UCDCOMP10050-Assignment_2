@@ -50,7 +50,7 @@ char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colInd
 }
 
 // print the board based on input board's grid
-void printBoard(PlayBoard board)
+void printBoard(PlayBoard board, Player activePlayer)
 {
     // print scoreboard
     printf(" Score: %s (Black) %d:%d %s (White)\n", board.player1.playerName, board.player1.playerScore, board.player2.playerScore, board.player2.playerName);
@@ -80,7 +80,16 @@ void printBoard(PlayBoard board)
                 // location of current printed grid in grid index
                 int localGridX = x;
                 int localGridY = y / 2;
-                char gridChar = getNodeState(board.grid, localGridY, localGridX);
+                char gridChar;
+
+                if (isMoveValid(board.grid, activePlayer, localGridY, localGridX, 0))
+                {
+                    gridChar = '.';
+                }
+                else
+                {
+                    gridChar = getNodeState(board.grid, localGridY, localGridX);
+                }
 
                 printf(" %c |", gridChar);
             }
@@ -102,26 +111,25 @@ void printBoard(PlayBoard board)
 // read input in format "%d%c" and convert it to index
 void readInput(Player activePlayer, int *row, int *col)
 {
-    int inputRow;
-    char inputCol;
+    int inputRow = -1;
+    char inputCol = -1;
     char discColorStr[MAX_ARRAY_SIZE];
     int read;
 
     strcpy(discColorStr, activePlayer.discColor == BLACK ? "Black" : "White");
 
     printf("It's %s (%s)'s  turn.\n", activePlayer.playerName, discColorStr);
-    printf("Enter move (a number followed by a character, e.g. 1b, 5g): ");
+    printf("Enter move (a number followed by a character, e.g. b1, g5): ");
 
     //read player's input with error checking
-    read = scanf("%d%c", &inputRow, &inputCol);
+    read = scanf(" %c %d", &inputCol, &inputRow);
 
     while (read != 2)
     {
         puts("Error reading input.");
-        printf("Enter move (a number followed by a character, e.g. 1b, 5g): ");
+        printf("Enter move (a number followed by a character, e.g. b1, g5): ");
 
-        fflush(stdin);
-        read = scanf("%d%c", &inputRow, &inputCol);
+        read = scanf(" %c %d", &inputCol, &inputRow);
     }
 
     *row = inputRow - 1;
@@ -310,6 +318,7 @@ int isMoveAvailable(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePla
     return 0;
 }
 
+// updates the scores of the playboard
 void updateScore(PlayBoard *board)
 {
     int score1 = 0; //black score

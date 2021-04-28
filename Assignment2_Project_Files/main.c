@@ -16,7 +16,7 @@ int main()
     printIntro();
     registerPlayers(&board);
 
-    printBoard(board);
+    printBoard(board, *activePlayerPtr);
 
     while (isPlaying == 1)
     {
@@ -30,9 +30,9 @@ int main()
             {
                 // the move is valid, do all possible captures and move to the next player
                 capture(&board, *activePlayerPtr, row, col);
-                updateScore(&board);
-                printBoard(board);
                 nextTurn(&board, &activePlayerPtr);
+                updateScore(&board);
+                printBoard(board, *activePlayerPtr);
             }
         }
         else
