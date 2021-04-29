@@ -1,6 +1,8 @@
 #include "library.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#define OUTPUT_FILE_PATH "othello-results.txt"
 
 void printIntro()
 {
@@ -47,6 +49,27 @@ char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colInd
     }
 
     return output;
+}
+
+// returns the string that represents the player's colour
+char* getNodeColourString(NodeState nodeState)
+{
+    char *colourStr;
+
+    if (nodeState == BLACK)
+    {
+        colourStr = "Black";
+    }
+    else if (nodeState == WHITE)
+    {
+        colourStr = "White";
+    }
+    else
+    {
+        colourStr = "Null";
+    }
+
+    return colourStr;
 }
 
 // print the board based on input board's grid
@@ -116,7 +139,7 @@ void readInput(Player activePlayer, int *row, int *col)
     char discColorStr[MAX_ARRAY_SIZE];
     int read;
 
-    strcpy(discColorStr, activePlayer.discColor == BLACK ? "Black" : "White");
+    strcpy(discColorStr, getNodeColourString(activePlayer.discColour));
 
     printf("It's %s (%s)'s  turn.\n", activePlayer.playerName, discColorStr);
     printf("Enter move (a number followed by a character, e.g. b1, g5): ");
@@ -210,13 +233,13 @@ int isNodeSelectable(int rowIndex, int colIndex)
 int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int centerRowIndex, int centerColIndex, int captureRowStep, int captureColStep)
 {
     int stepsMoved = 0;         //number of steps moved
-    NodeState activeColor;      //stores the color of the active player
-    NodeState opponentColor;    //stores the color to be captured
+    NodeState activeColor;      //stores the colour of the active player
+    NodeState opponentColor;    //stores the colour to be captured
     int curRowIndex;            //stores the row index of the node being checked
     int curColIndex;            //stores the column index of the node being checked
-    NodeState curNode;          //stores the color of the current node being checked
+    NodeState curNode;          //stores the colour of the current node being checked
 
-    activeColor = activePlayer.discColor;
+    activeColor = activePlayer.discColour;
     opponentColor = activeColor == BLACK ? WHITE : BLACK;
 
     // move one step and get the node
@@ -224,7 +247,7 @@ int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activ
     curColIndex = centerColIndex + captureColStep;
     curNode = grid[curRowIndex][curColIndex];
 
-    // move in the given step until it reaches the border or the current node is not the opponent's color
+    // move in the given step until it reaches the border or the current node is not the opponent's colour
     while (isNodeSelectable(curRowIndex, curColIndex) && curNode == opponentColor)
     {
         stepsMoved += 1;
@@ -239,7 +262,7 @@ int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activ
         return stepsMoved;
     }
 
-    // the last disc checked is not the active color. cannot capture
+    // the last disc checked is not the active colour. cannot capture
     return 0;
 }
 
@@ -248,7 +271,7 @@ void capture(PlayBoard *board, Player activePlayer, int centerRowIndex, int cent
 {
     // the number of discs to be captured
     int numCapture;
-    NodeState activeColor = activePlayer.discColor;
+    NodeState activeColor = activePlayer.discColour;
 
     // place the center disc
     board->grid[centerRowIndex][centerColIndex] = activeColor;
@@ -283,12 +306,12 @@ void capture(PlayBoard *board, Player activePlayer, int centerRowIndex, int cent
 // Make activePlayerPtr point to the next player. Pointer to board needs to be used so that activePlayerPtr points to the board with file scope
 void nextTurn(PlayBoard *board, PlayerPtr *curActivePlayerPtr)
 {
-    if ((*curActivePlayerPtr)->discColor == BLACK)
+    if ((*curActivePlayerPtr)->discColour == BLACK)
     {
         // current active player is player 1, change it to player 2
         *curActivePlayerPtr = &board->player2;
     }
-    else if ((*curActivePlayerPtr)->discColor == WHITE)
+    else if ((*curActivePlayerPtr)->discColour == WHITE)
     {
         // current active player is player 2, change it to player 1
         *curActivePlayerPtr = &board->player1;
@@ -296,7 +319,7 @@ void nextTurn(PlayBoard *board, PlayerPtr *curActivePlayerPtr)
     else
     {
         // precaution
-        puts("Error: Player with invalid disc color entered. Failed to proceed to next turn");
+        puts("Error: Player with invalid disc colour entered. Failed to proceed to next turn");
     }
 }
 
@@ -329,11 +352,11 @@ void updateScore(PlayBoard *board)
         for (int x = 0; x < GRID_SIZE; ++x)
         {
             NodeState curNode = board->grid[y][x];
-            if (curNode == board->player1.discColor)
+            if (curNode == board->player1.discColour)
             {
                 score1++;
             }
-            else if (curNode == board->player2.discColor)
+            else if (curNode == board->player2.discColour)
             {
                 score2++;
             }
@@ -366,10 +389,57 @@ void endGame(PlayBoard board)
             winner = board.player2;
         }
 
-        printf("The winner is %s (%s)\n", winner.playerName, winner.discColor == BLACK ? "Black" : "White");
+        printf("The winner is %s (%s)\n", winner.playerName, getNodeColourString(winner.discColour));
     }
     else
     {
         puts("The game ended as a draw.");
     }
+}
+
+// create or append the date, time, winner and score of the game to the output file
+void saveGameResult(PlayBoard board)
+{
+    FILE *fp = NULL;
+    time_t curTime;
+
+    curTime = time(NULL);
+
+    fp = fopen(OUTPUT_FILE_PATH, "a");
+
+    if (fp != NULL)
+    {
+        char *timeString;
+
+        timeString = ctime(&curTime);
+        fprintf(fp, "%s", timeString);
+        fprintf(fp, "Score: %s (Black) %d:%d %s (White)\n", board.player1.playerName, board.player1.playerScore, board.player2.playerScore, board.player2.playerName);
+        fprintf(fp, "Winner: ");
+
+        if (board.player1.playerScore != board.player2.playerScore)
+        {
+            if (board.player1.playerScore > board.player2.playerScore)
+            {
+                fprintf(fp, "%s (Black)\n", board.player1.playerName);
+            }
+            else if (board.player1.playerScore < board.player2.playerScore)
+            {
+                fprintf(fp, "%s (White)\n", board.player2.playerName);
+            }
+        }
+        else
+        {
+            fprintf(fp, "Null (Draw)\n");
+        }
+
+        fprintf(fp, "\n");
+
+        printf("Successfully saved game result to %s\n", OUTPUT_FILE_PATH);
+    }
+    else
+    {
+        puts("Error creating file to save result.");
+    }
+
+    fclose(fp);
 }

@@ -24,6 +24,8 @@ int main()
 
         if (isMoveAvailable(board.grid, *activePlayerPtr))
         {
+            skippedLastTurn = 0;
+
             readInput(*activePlayerPtr, &row, &col);
 
             if (isMoveValid(board.grid, *activePlayerPtr, row, col, 1))
@@ -37,7 +39,7 @@ int main()
         }
         else
         {
-            printf("No move available for %s (%s).\n", activePlayerPtr->playerName, activePlayerPtr->discColor == BLACK ? "Black" : "White");
+            printf("No move available for %s (%s).\n", activePlayerPtr->playerName, getNodeColourString(activePlayerPtr->discColour));
 
             if (skippedLastTurn == 0)
             {
@@ -52,6 +54,7 @@ int main()
     }
 
     endGame(board);
+    saveGameResult(board);
 
     return 0;
 }

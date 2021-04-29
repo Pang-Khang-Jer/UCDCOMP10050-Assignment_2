@@ -14,7 +14,7 @@ typedef struct player
 {
     char playerName[MAX_ARRAY_SIZE];
     int playerScore;
-    NodeState discColor;
+    NodeState discColour;
 } Player;
 
 typedef struct playBoard
@@ -32,6 +32,7 @@ void registerPlayers(PlayBoard *board);
 void printBoard(PlayBoard board, Player activePlayer);
 void readInput(Player activePlayer, int *row, int *col);
 char getNodeState(NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
+char* getNodeColourString(NodeState nodeState);
 int isMoveValid(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer, int rowIndex, int colIndex, int printWarnings);
 int isNodeEmpty(const NodeState grid[GRID_SIZE][GRID_SIZE], int rowIndex, int colIndex);
 int isNodeSelectable(int rowIndex, int colIndex);
@@ -41,5 +42,6 @@ void nextTurn(PlayBoard *board, PlayerPtr *curActivePlayerPtr);
 int isMoveAvailable(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activePlayer);
 void updateScore(PlayBoard *board);
 void endGame(PlayBoard board);
+void saveGameResult(PlayBoard board);
 
 #endif //ASSIGNMENT2_PROJECT_FILES_LIBRARY_H
