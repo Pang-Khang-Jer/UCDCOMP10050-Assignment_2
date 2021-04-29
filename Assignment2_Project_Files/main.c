@@ -43,7 +43,9 @@ int main()
 
             if (skippedLastTurn == 0)
             {
+                // pass the current player and reprint the board to show possible moves by the next player
                 nextTurn(&board, &activePlayerPtr);
+                printBoard(board, *activePlayerPtr);
                 skippedLastTurn = 1;
             }
             else

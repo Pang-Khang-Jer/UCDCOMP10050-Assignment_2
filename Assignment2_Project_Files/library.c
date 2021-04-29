@@ -12,6 +12,7 @@ void printIntro()
 void initializeGrid(PlayBoard *board)
 {
     int center = GRID_SIZE / 2;
+
     board->grid[center - 1][center - 1] = WHITE;
     board->grid[center][center - 1] = BLACK;
     board->grid[center - 1][center] = BLACK;
@@ -269,15 +270,33 @@ int canCaptureDirection(const NodeState grid[GRID_SIZE][GRID_SIZE], Player activ
     // move one step and get the node
     curRowIndex = centerRowIndex + captureRowStep;
     curColIndex = centerColIndex + captureColStep;
-    curNode = grid[curRowIndex][curColIndex];
+
+    // get the node on the next step
+    if (isNodeSelectable(curRowIndex, curColIndex))
+    {
+        curNode = grid[curRowIndex][curColIndex];
+    }
+    else
+    {
+        curNode = EMPTY;
+    }
 
     // move in the given step until it reaches the border or the current node is not the opponent's colour
-    while (isNodeSelectable(curRowIndex, curColIndex) && curNode == opponentColor)
+    while (curNode == opponentColor)
     {
         stepsMoved += 1;
         curRowIndex += captureRowStep;
         curColIndex += captureColStep;
-        curNode = grid[curRowIndex][curColIndex];
+
+        // get the node on the next step
+        if (isNodeSelectable(curRowIndex, curColIndex))
+        {
+            curNode = grid[curRowIndex][curColIndex];
+        }
+        else
+        {
+            curNode = EMPTY;
+        }
     }
 
     // check the current node to see if it can be captured
