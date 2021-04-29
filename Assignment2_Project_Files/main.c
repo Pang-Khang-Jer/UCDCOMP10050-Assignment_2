@@ -56,5 +56,7 @@ int main()
     endGame(board);
     saveGameResult(board);
 
+    puts("Program ended");
+
     return 0;
 }

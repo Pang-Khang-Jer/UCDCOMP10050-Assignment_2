@@ -76,18 +76,30 @@ char* getNodeColourString(NodeState nodeState)
 void printBoard(PlayBoard board, Player activePlayer)
 {
     // print scoreboard
-    printf(" Score: %s (Black) %d:%d %s (White)\n", board.player1.playerName, board.player1.playerScore, board.player2.playerScore, board.player2.playerName);
+    printf(" Score: %s (Black) %d:%d %s (White)\n\n", board.player1.playerName, board.player1.playerScore, board.player2.playerScore, board.player2.playerName);
 
+    // print the column labels at the top of the board
+    char xLabel = 'a';
+    printf("     ");
+    for (int x = 0; x < GRID_SIZE; ++x)
+    {
+        printf("%-4c", xLabel);
+        xLabel++;
+    }
+    printf("\n");
+
+    // print the grid
     // loop until GRID_SIZE * 2 + 1 because each row needs to be looped twice and one extra loop is needed to close the grid
     for (int y = 0; y < GRID_SIZE * 2 + 1; ++y)
     {
-        // prints the start of the rows according to parity of printed row
+        // prints the row labels at the left end of the board according to parity of printed row
         if (y % 2 == 0)
         {
             printf("    ");
         }
         else
         {
+            // print the row label
             printf(" %d |", y / 2 + 1);
         }
 
@@ -117,10 +129,22 @@ void printBoard(PlayBoard board, Player activePlayer)
                 printf(" %c |", gridChar);
             }
         }
+
+        // prints the row labels at the right end of the board according to parity of printed row
+        if (y % 2 == 0)
+        {
+            printf("    ");
+        }
+        else
+        {
+            printf(" %d", y / 2 + 1);
+        }
+
         printf("\n");
     }
 
-    char xLabel = 'a';
+    // print the column labels at the bottom of the board
+    xLabel = 'a';
     printf("     ");
     for (int x = 0; x < GRID_SIZE; ++x)
     {
